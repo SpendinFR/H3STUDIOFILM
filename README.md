@@ -11,13 +11,105 @@
 A local, browser-based Studio with two sections in one interface:
 
 - **Film Directions:** AI-assisted film development (content, scenes, shots and clip prompts), references for characters/sets/audio, MiniMax H3 RAW video generation, motion context for successive clips, and a separate HD refine / continuity / assembly pipeline.
-- **Retouches:** nine editing engines for operations such as retakes, performance/action, dialogue and emotion, inserting or removing subjects, character replacement, camera changes, and related clip edits. Some depend on additional models, LoRAs, masking or geometry nodes.
+- **Retouches:** a separate non-destructive video editing workspace with **nine visible editing modes**: remove/replace people and objects, change the camera or background, edit a local region, make a precise retake, or insert a new object. Some features depend on additional models, LoRAs, masking or geometry nodes.
 - **Reference generation:** Krea2-based image/reference workflows, optionally with SeedVR2 and UltraSharp upscaling.
 - **Local LLMs:** Ollama for film directors and some retouch prompts; optional `llama.cpp` variants for supported directing configurations.
 
 The project's **original configuration** uses a Singularity MiniMax H3 Ref2VA INT8 checkpoint and an H3 workflow with separate RAW and HD phases. A modified model is **not guaranteed** to work with exactly the same encoder, VAE, LoRA, input schema, sampler or latent format.
 
 **Nothing here requires a cloud subscription to the Studio itself;** however, downloading large models and running video generation requires considerable disk space, memory and a compatible GPU.
+
+---
+
+## Studio tour — what you can actually do
+
+H3 Film Studio combines **film planning, reference management, video generation and editing** inside a locally hosted browser interface. The two main workspaces serve different purposes: **Film Directions creates and organizes a film**, while **Retouches modifies existing video clips**. Both rely on the ComfyUI and local AI models installed on your computer.
+
+### Film Directions — from an idea to an assembled film
+
+1. **Start or resume a film project.** Describe the premise, style and creative intention. The project keeps track of its scenes, shots, clips and production decisions so you can pick up where you left off.
+2. **Direct the AI Directors.** The local LLM-assisted pipeline proposes content, scenes, shots and generation prompts. Review the proposals, request changes and validate decisions instead of treating the first generated script as final. The Studio separates the wider story, individual scenes, the shot plan and the exact H3 clip prompt.
+3. **Build a reference bank (RefBank).** Keep visual references for characters, places, objects and appearance, together with audio-related references where supported. Import your own material or use the included **Krea2** reference-generation and image-editing workflows. Available reference-upscale paths include SeedVR2 and UltraSharp where installed.
+4. **Generate a video clip as H3 RAW.** Film Directions sends the selected prompt and references to ComfyUI and records the generated RAW MP4; its native RAW latent can also be saved for the later HD pipeline. The original setup is based on **MiniMax H3 / Singularity** and short clip-by-clip production, rather than generating an entire movie in one pass.
+5. **Maintain continuity between clips.** The workflow can use preceding motion context and the project's continuity data so a following clip can connect to what came before. This is a continuity mechanism, **not a guarantee** of seamless identity or motion in every output.
+6. **Refine the selected clip in HD.** The supplied workflow has a separate **RAW → latent upscaling → HardLock → HD refine → visible output** path, using its project-specific nodes. The original setup targets **1920-wide video**. Keep the exact model, VAE and workflow configuration if you want to reproduce the original behavior.
+7. **Build the cumulative FINAL.** Once a clip is processed, the assembly path joins it with previously approved output to extend the film. The interface provides a timeline, clip-specific prompts/references, RAW and HD viewing, rendering status, production journal and the latest cumulative FINAL preview.
+8. **Send a RAW clip to Retouches when needed.** Select a clip and open the Retouches workspace for a targeted alternative take. Review the resulting MP4 before approving it; the original film source is kept separately.
+
+**What the interface contains:** a Film Director decision desk, project management, screenplay/shot views, RefBank, active prompt and reference display, a clip viewer, RAW/HD controls, a timeline, job progress, and a cumulative FINAL preview.
+
+**Technical workflow, simplified:**
+
+```text
+Film idea -> AI Directors -> Scenes -> Shot plan -> H3 clip prompt
+                      |                  |
+                      +-> RefBank (Krea / imported references)
+                                         |
+                          H3 RAW MP4 + saved RAW latent
+                                         |
+                         Motion Context for the next clip
+                                         |
+                         Latent upscale -> HardLock -> HD refine
+                                         |
+                              Visible clip -> cumulative FINAL
+```
+
+The files already supplied for this route include `workflows/H3Studio_1920_API_CLEAN.json` and the three `workflows/Krea_reference*.json` variants. They are **workflows**, not the model weights or custom-node implementations. See the installation sections below for those dependencies.
+
+### Retouches — edit an existing clip without replacing the original
+
+Retouches is a separate video-editing workspace. **Choose a completed project clip or import an MP4**, inspect it in the player, select a mode, describe your change in natural language and optionally point to a subject or a time range. Where relevant, use an image from RefBank or import a new appearance reference. The Studio prepares a ComfyUI job, lets you review the new MP4 and keeps the original video as a separate file.
+
+The **nine modes visible in the V3.1 Retouches interface** are:
+
+| Editing mode | What it is intended to do | Typical inputs / dependencies |
+|---|---|---|
+| **1. Remove person** | Remove a selected person and reconstruct the region behind them. | Target description or selected area; SAM3 / mask tracking; H3 Person Remover route. |
+| **2. Replace person** | Replace the appearance of an existing actor while attempting to preserve the shot and motion. | Target + reference image from RefBank or upload; compatible H3 / character-swap path. |
+| **3. Remove element** | Remove a selected object or visual element from the scene. | Select or describe the object; pixel/motion tracking and masked retouch. |
+| **4. Replace element** | Replace one selected object or element with another. | Target region + desired replacement and, when useful, reference image. |
+| **5. Change camera** | Attempt a new camera angle or point of view on an existing clip. | Horizontal/vertical angle controls; CrossViewWarp and MoGe geometry. Newly revealed areas require reconstruction. |
+| **6. Replace background** | Change the environment while attempting to retain the foreground subject. | New environment description; subject mask, MVEx/LanPaint and compatible H3 variant. |
+| **7. Edit local area** | Modify a selected part of a shot without intending to remake the entire image. | Free-text instruction + optional spatial selection; mask/inpainting pipeline. |
+| **8. Precise retake** | Regenerate a chosen time interval, with temporal raccord/stitching against the original clip. | Start/end time, optional area and natural-language change. |
+| **9. Insert element** | Introduce a new visual object or element into the existing shot. | Natural-language description, optional reference image and target area/time. |
+
+**Additional RAW-engine code:** the source also contains *Prolongation* (extend) and *Performance* processing paths for action, dialogue and emotional changes. Their availability depends on the version and entry points being used; they are **not counted as extra buttons in the nine-mode V3.1 grid**. The distinction matters when comparing screenshots, older versions and source code.
+
+**Typical Retouches workflow:**
+
+```text
+Project RAW clip or imported MP4
+                |
+     Select one of 9 editing modes
+                |
+     Describe the change in plain language
+     (optional: image / region / time range)
+                |
+         ComfyUI retouch render
+                |
+      New MP4 -> review -> approve / retry / continue editing
+                |
+          Original clip remains intact
+```
+
+**Conveniences:** optional mask previews before an expensive generation, quick short tests on supported modes, independent render history, and a review flow for chaining a further edit from an approved version. Specific retouches need additional third-party nodes, LoRAs or models; check the tables below before launching a mode.
+
+**Important V3.1 handoff limitation:** approving a retouched MP4 and returning to Film Directions does **not necessarily replace the original RAW latent used by the HD refine workflow**. The interface itself warns that this conversion is a separate unfinished step. Do not assume a retouched MP4 will automatically become the exact latent source for HardLock/HD. Some retouch → HD/FINAL operations also have known audio or performance issues; inspect the actual outputs before relying on them.
+
+### Screenshots and demo video
+
+GitHub can display screenshots and an uploaded MP4 directly in this README. **This release has no demo media embedded yet**: upload your own screenshot or MP4 as a GitHub attachment, then paste its generated `https://github.com/user-attachments/assets/...` URL into the following template. No local Windows path will work as a public URL.
+
+<!-- Screenshot template: remove these comment markers after replacing the example URL.
+<p align="center">
+  <img width="900" alt="H3 Film Studio — Film Directions interface" src="https://github.com/user-attachments/assets/REPLACE_WITH_YOUR_SCREENSHOT_ID" />
+</p>
+-->
+
+<!-- Video template: after upload, replace with the REAL raw user-attachments URL on its OWN LINE (not inside a Markdown link).
+https://github.com/user-attachments/assets/REPLACE_WITH_YOUR_VIDEO_ID
+-->
 
 ---
 
