@@ -465,15 +465,5 @@ Credits / upstream projects used or referenced include:
 
 ---
 
-## Maintainer release checklist (before publishing this README as “complete”)
-
-This README is ready to edit and publish, but **the original V3.1 archive is not yet a complete environment export**. For a transparent public release:
-
-- [ ] Copy the **already located** project-specific folders from the original PC (see [Located on the original working Windows PC](#located-on-the-original-working-windows-pc)) into the release where redistribution is permitted, including companion modules and web assets; check their imported node classes.
-- [ ] Verify which `FantasticLoraLoaderMulti` implementation/version the original installation loads and bundle/link that implementation.
-- [ ] Check that each of the external retouch JSON files downloads, parses and works against the selected node versions; optionally include those JSONs if their license allows it.
-- [ ] Confirm required model filenames, folders and ComfyUI node versions against the original working installation (especially optional MoGe2 and H3 Relay components).
-- [ ] Add a **source-code license** and preserve third-party license/attribution files; exclude tokens, machine-specific caches, local media and model weights.
-- [ ] If possible, run a **fresh-environment test** of first RAW → HD → audio-preserving assembly and one retouch. Until this is done, don't claim a tested one-click installation.
 
 *Made for creators who like to experiment. Take it, explore it, adapt it — and have fun making films.*
