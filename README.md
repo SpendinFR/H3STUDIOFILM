@@ -1,4 +1,5 @@
 # H3 Film Studio — Film Directions + 9 Retouch Engines
+https://github.com/user-attachments/assets/386e3683-55e0-4e41-b825-72323731e8c0
 
 > **Community release · Windows / NVIDIA / ComfyUI · Provided AS IS**
 >
