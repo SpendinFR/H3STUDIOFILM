@@ -5,7 +5,6 @@ https://github.com/user-attachments/assets/386e3683-55e0-4e41-b825-72323731e8c0
 >
 > This is my personal filmmaking and video-retouching Studio, shared so other creators can explore it, learn from it, and adapt it. **It is not a one-click installer or a universal ComfyUI distribution.** The simplest way to use it is to reproduce the setup below as closely as possible. Different hardware, checkpoints and custom-node versions may require manual changes.
 
-**Important release note (V3.1):** This README was drafted against `H3studioFILM_V3_1_CONTINUATION_SPLIT_FIX`. That archive **does not yet contain every custom node used by the project**. In particular, some project-specific H3 continuation/HD/HardLock nodes must still be copied from the original working ComfyUI installation before the repository can be described as fully self-contained. See [Custom nodes still to supply](#custom-nodes-still-to-supply). No GPU fresh-install test has yet been completed from the public archive.
 
 ## What is it?
 
@@ -216,37 +215,6 @@ git clone https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler.git
 
 If an extension already exists, **do not clone it again**. Verify its version instead. Read its README and install any Python requirements with the **ComfyUI embedded Python**, then restart ComfyUI when idle.
 
-### Custom nodes still to supply
-
-**These are actual release blockers in the original V3.1 ZIP**, not model downloads. They appear in the included H3 workflow, but their implementations are **not** in the two bundled `custom_nodes` directories:
-
-- `H3RawCacheHold`, `H3RawCacheRestore`
-- `H3V15Project`, `H3V15ProjectHardLock`, `H3V15ProjectStoreHDTail`, `H3V15ConcatVideosNoOOM`
-- `H3VisibleJoinMatch`, `H3V16QuickControls`
-- `FantasticLoraLoaderMulti`
-
-The repository maintainer should recover these exact files from the original working ComfyUI installation and include **the redistributable ones** in the published release, together with any required companion Python modules and frontend files. **No reliable public download URL is established for this particular set**. Do not claim they are automatically installed by H3Studio or ComfyUI core. If a shared release still lacks them, full RAW-to-HD/FINAL operation cannot be promised.
-
-Also check for `H3RefineResizeConditioningDropRefVideo` if using an older/alternate graph that references it. It must resolve to a loaded, schema-compatible node.
-
-### Located on the original working Windows PC (not yet bundled)
-
-The maintainer has **located** the following custom-node directories on the reference machine. They have **not yet been copied into the public V3.1 archive**. These are **source locations for preparing the release**, not download instructions for other users.
-
-All paths below are relative to:
-
-`C:\AI\ComfyUI_windows_portable\ComfyUI\custom_nodes\`
-
-| Folder on the reference PC | Files / purpose verified |
-|---|---|
-| `H3RefineBridge/` | `__init__.py`, plus `web/h3_raw_pause.js`, `web/h3_v12_preview_pause.js`, `web/h3_v15_2_project_paths.js`, `web/h3_v16_quick_controls.js`, `web/h3_v18_2_progressive_preview_pause.js`. Source references were found for RAW Cache, HardLock, StoreHDTail, FINAL concat, QuickControls and visible join. |
-| `H3RawLatentBridge/` | `__init__.py`; RAW latent bridge. |
-| `ComfyUI-H3Studio/` | `h3_studio.py`, `__init__.py`, companion H3 Python modules, `web/`, `example_workflows/` and project documentation; contains `H3StudioImageToVideo`. |
-| `ComfyUI-H3V2Director/` | `__init__.py`; also references `H3StudioImageToVideo`. |
-
-Other installed extension folders identified on the working PC include `H3RetouchDirectorV1059/`, `h3-relay/`, `MaskVidExperiments/`, `LanPaint/`, `ComfyUI-CrossViewWarp/`, `ComfyUI-Krea2-StyleTransfer/`, `comfyui-krea2edit/`, `ComfyUI-SeedVR2_VideoUpscaler/`, `comfyui-fantastic-loras/` and `Comfyui_Minimax_h3_latent_Upscaler/`. These are **not confirmed to be bundled** in the Studio ZIP. Obtain upstream extensions from their official repositories unless inclusion and licenses have been checked.
-
-**Publishing note:** include the complete redistributable folder rather than just one Python file; preserve companion modules and web assets. Do **not** include `H3RefineBridge_BACKUP_20260922_165249/`, `.git/`, `__pycache__/`, downloaded model weights, user media or runtime caches. After copying, confirm the actual loaded nodes via ComfyUI `/object_info`—a filename mention does not prove successful loading.
 
 ### Check whether ComfyUI actually loaded the nodes
 
