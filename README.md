@@ -122,7 +122,7 @@ The following is **the easiest route for the original Windows configuration**. I
    - `C:\AI\ComfyUI_windows_portable\ComfyUI\main.py`
    - `C:\AI\ComfyUI_windows_portable\python_embeded\python.exe`
 3. Download/extract the Studio release into a **separate directory** (for example `C:\H3studioFILM_V3_1`). Do **not** put the Studio at the root of ComfyUI.
-4. Install the [custom nodes](#custom-nodes--extensions): copy the two included `custom_nodes` folders into ComfyUI and install the external extensions listed below. **The unpublished project-specific nodes are not in the original V3.1 ZIP and must be included by the maintainer or obtained separately from the original installation.**
+4. Install the [custom nodes](#custom-nodes--extensions): copy the two included `custom_nodes` folders into ComfyUI and install the external extensions listed below. 
 5. Download the [models and LoRAs](#models-to-download--exact-filenames) for the features you want to use. Place each file in the exact ComfyUI model folder shown. Do not rename the original H3 checkpoints without also updating references in workflows/code.
 6. Install [Ollama](https://ollama.com/download) and pull the text model(s) used by your chosen Director/Retouch mode. **Some existing retouch flows specifically expect `gemma4:26b-a4b-it-q4_K_M` or another installed `gemma4:26b*` Ollama tag.** Check your locally available model tags with `ollama list`.
 7. Make [FFmpeg](https://ffmpeg.org/download.html) available in `PATH` (or ensure the embedded ComfyUI Python has `imageio-ffmpeg`). Install [Git for Windows](https://git-scm.com/downloads/win) if you will clone nodes.
